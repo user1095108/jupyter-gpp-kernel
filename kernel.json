@@ -1,0 +1,10 @@
+{
+  "argv": ["python", "-m", "jupyter-gcc-kernel", "-f", "{connection_file}"],
+  "display_name": "GCC Kernel",
+  "name": "gcc",
+  "language": "gcc",
+  "mimetype": "text/x-cpp",
+  "metadata": {
+    "languages": ["c", "cpp"]
+  }
+}
