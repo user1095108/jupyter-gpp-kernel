@@ -74,9 +74,9 @@ class GPPKernel(MetaKernel):
     elif output.startswith(b'\x89PNG\r\n\x1a\n') or output.startswith(b'\xFF\xD8'):
       return Image(output)
     else:
-      txt = output.decode()
+      output = output.decode()
 
-      if re.search(r'<svg[^>]*>', txt):
-        return HTML(txt)
+      if re.search(r'<svg[^>]*>', output):
+        return HTML(output)
       else:
-        self.Write(txt)
+        self.Write(output)
