@@ -18,20 +18,20 @@ class GPPMagics(Magic):
 
   def line_reset(self, a=''):
     self.kernel._vars = {
-      "CC": "g++",
-      "CFLAGS": "-std=c++20 -O3 -s -fno-stack-protector",
-      "PFLAGS": "-tpng",
-    }
+        "CC": "g++",
+        "CFLAGS": "-std=c++20 -O3 -s -fno-stack-protector",
+        "PFLAGS": "-tpng",
+      }
 
 class GPPKernel(MetaKernel):
   implementation = 'Jupyter GPP Kernel'
   implementation_version = '0.1'
   language = 'c++'
   language_info = {
-    'name': 'c++',
-    'mimetype': 'text/x-cpp',
-    'file_extension': '.cpp',
-  }
+      'name': 'c++',
+      'mimetype': 'text/x-cpp',
+      'file_extension': '.cpp',
+    }
   banner = implementation
 
   def _exec_gpp(self, filename, code):
@@ -64,10 +64,10 @@ class GPPKernel(MetaKernel):
     output = result.stderr if result.returncode else result.stdout
 
     self.kernel_resp = {
-      'execution_count': self.execution_count,
-      'payload': [],
-      'status': "error" if result.returncode else 'ok',
-    }
+        'execution_count': self.execution_count,
+        'payload': [],
+        'status': "error" if result.returncode else 'ok',
+      }
 
     if result.returncode:
       self.Error(output.decode())
