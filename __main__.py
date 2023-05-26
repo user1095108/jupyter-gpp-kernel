@@ -1,4 +1,4 @@
-from .kernel import GCCKernel
+from .kernel import GPPKernel
 
 if __name__ == '__main__':
-  GCCKernel.run_as_main()
+  GPPKernel.run_as_main()

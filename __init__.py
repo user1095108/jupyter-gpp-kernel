@@ -1,1 +1,1 @@
-from .kernel import GCCKernel
+from .kernel import GPPKernel

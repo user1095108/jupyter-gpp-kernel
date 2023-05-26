@@ -3,7 +3,7 @@ import os, re, subprocess, tempfile
 from IPython.display import HTML, Image
 from metakernel import MetaKernel, Magic
 
-class GCCMagics(Magic):
+class GPPMagics(Magic):
   def line_CC(self, args=''):
     self.kernel._vars["CC"] = args
 
@@ -25,10 +25,10 @@ class GCCMagics(Magic):
       "CFLAGS": "-std=c++20 -O3 -s -fno-stack-protector"
     }
 
-class GCCKernel(MetaKernel):
+class GPPKernel(MetaKernel):
   _dir = tempfile.gettempdir()
 
-  implementation = 'Jupyter GCC Kernel'
+  implementation = 'Jupyter GPP Kernel'
   implementation_version = '0.1'
   language = 'c++'
   language_info = {
@@ -38,7 +38,7 @@ class GCCKernel(MetaKernel):
   }
   banner = implementation
 
-  def _exec_gcc(self, code):
+  def _exec_gpp(self, code):
     with tempfile.NamedTemporaryFile(dir=self._dir, suffix=".out") as tmpfile:
       filename = tmpfile.name
 
@@ -64,14 +64,14 @@ class GCCKernel(MetaKernel):
 
   def __init__(self, *args, **kwargs):
     super().__init__(*args, **kwargs)
-    self.register_magics(GCCMagics)
+    self.register_magics(GPPMagics)
     self.call_magic("%reset")
 
   def do_execute_direct(self, code, silent=False):
     if code.lstrip().startswith("@start"):
       result = self._exec_puml(code)
     else:
-      result = self._exec_gcc(code)
+      result = self._exec_gpp(code)
 
     output = result.stderr if result.returncode else result.stdout
 
