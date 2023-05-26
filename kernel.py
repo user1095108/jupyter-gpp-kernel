@@ -10,13 +10,17 @@ class GPPMagics(Magic):
   def line_CFLAGS(self, a=''):
     self.kernel._vars["CFLAGS"] = a if a else (self.kernel.Print(self.kernel._vars["CFLAGS"]) or self.kernel._vars["CFLAGS"])
 
+  def line_PFLAGS(self, a=''):
+    self.kernel._vars["PFLAGS"] = a if a else (self.kernel.Print(self.kernel._vars["PFLAGS"]) or self.kernel._vars["PFLAGS"])
+
   def line_cd(self, a=''):
     os.chdir(os.path.expanduser(a)) if a else self.kernel.Print(os.getcwd())
 
   def line_reset(self, a=''):
     self.kernel._vars = {
       "CC": "g++",
-      "CFLAGS": "-std=c++20 -O3 -s -fno-stack-protector"
+      "CFLAGS": "-std=c++20 -O3 -s -fno-stack-protector",
+      "PFLAGS": "-tpng",
     }
 
 class GPPKernel(MetaKernel):
@@ -26,7 +30,7 @@ class GPPKernel(MetaKernel):
   language_info = {
     'name': 'c++',
     'mimetype': 'text/x-cpp',
-    'file_extension': '.cpp'
+    'file_extension': '.cpp',
   }
   banner = implementation
 
@@ -40,7 +44,7 @@ class GPPKernel(MetaKernel):
 
   def _exec_puml(self, filename, code):
     return subprocess.run(
-        "plantuml -tpng -p",
+        f"plantuml {self._vars['PFLAGS']} -p",
         input=code.encode(),
         capture_output=True,
         shell=True,
