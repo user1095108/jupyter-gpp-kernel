@@ -14,7 +14,7 @@ class GPPMagics(Magic):
     self.kernel._vars["PFLAGS"] = a if a else (self.kernel.Print(self.kernel._vars["PFLAGS"]) or self.kernel._vars["PFLAGS"])
 
   def line_cd(self, a=''):
-    os.chdir(os.path.expanduser(a)) if a else self.kernel.Print(os.getcwd())
+    os.chdir(os.path.expanduser(a)) if a and os.path.isdir(os.path.expanduser(a)) else self.kernel.Print(os.getcwd())
 
   def line_reset(self, a=''):
     self.kernel._vars = {
