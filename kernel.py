@@ -4,14 +4,17 @@ from IPython.display import HTML, Image
 from metakernel import MetaKernel, Magic
 
 class GPPMagics(Magic):
+  def _set_or_print_var(self, var_name, value):
+    self.kernel._vars[var_name] = value if value else (self.kernel.Print(self.kernel._vars[var_name]) or self.kernel._vars[var_name])
+
   def line_CC(self, a=''):
-    self.kernel._vars["CC"] = a if a else (self.kernel.Print(self.kernel._vars["CC"]) or self.kernel._vars["CC"])
+    self._set_or_print_var("CC", a)
 
   def line_CFLAGS(self, a=''):
-    self.kernel._vars["CFLAGS"] = a if a else (self.kernel.Print(self.kernel._vars["CFLAGS"]) or self.kernel._vars["CFLAGS"])
+    self._set_or_print_var("CFLAGS", a)
 
   def line_PFLAGS(self, a=''):
-    self.kernel._vars["PFLAGS"] = a if a else (self.kernel.Print(self.kernel._vars["PFLAGS"]) or self.kernel._vars["PFLAGS"])
+    self._set_or_print_var("PFLAGS", a)
 
   def line_cd(self, a=''):
     os.chdir(os.path.expanduser(a)) if a and os.path.isdir(os.path.expanduser(a)) else self.kernel.Print(os.getcwd())
