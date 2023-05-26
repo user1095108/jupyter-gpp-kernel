@@ -19,7 +19,7 @@ class GPPMagics(Magic):
   def line_reset(self, a=''):
     self.kernel._vars = {
         "CC": "g++",
-        "CFLAGS": "-std=c++20 -O3 -s -fno-stack-protector",
+        "CFLAGS": "-std=c++20 -march=native -O3 -fno-plt -fno-stack-protector -s -pipe",
         "PFLAGS": "-tpng",
       }
 
