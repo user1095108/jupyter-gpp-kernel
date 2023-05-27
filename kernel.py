@@ -4,23 +4,20 @@ from IPython.display import HTML, Image
 from metakernel import MetaKernel, Magic
 
 class GPPMagics(Magic):
-  def _set_or_print_var(self, var_name, value):
-    self.kernel._vars[var_name] = value if value else (self.kernel.Print(self.kernel._vars[var_name]) or self.kernel._vars[var_name])
-
   def line_CC(self, a=''):
-    self._set_or_print_var("CC", a)
+    self.kernel._vars["CC"] = a
 
   def line_CFLAGS(self, a=''):
-    self._set_or_print_var("CFLAGS", a)
+    self.kernel._vars["CFLAGS"] = a
 
   def line_LDFLAGS(self, a=''):
-    self._set_or_print_var("LDFLAGS", a)
+    self.kernel._vars["LDFLAGS"] = a
 
   def line_OFLAGS(self, a=''):
-    self._set_or_print_var("OFLAGS", a)
+    self.kernel._vars["OFLAGS"] = a
 
   def line_PFLAGS(self, a=''):
-    self._set_or_print_var("PFLAGS", a)
+    self.kernel._vars["PFLAGS"] = a
 
   def line_C(self, a=''):
     self.kernel._cellcontents = "c"
@@ -30,6 +27,9 @@ class GPPMagics(Magic):
 
   def line_cd(self, a=''):
     os.chdir(os.path.expanduser(a)) if a and os.path.isdir(os.path.expanduser(a)) else self.kernel.Print(os.getcwd())
+
+  def line_print(self, a=''):
+    self.kernel.Print(self.kernel._vars.get(a, f"{a} does not exist") if a else str(self.kernel._vars))
 
   def line_reset(self, a=''):
     self.kernel._vars = {
