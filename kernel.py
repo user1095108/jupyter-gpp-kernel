@@ -7,20 +7,23 @@ class GPPMagics(Magic):
   def _set_or_print_var(self, var_name, value):
     self.kernel._vars[var_name] = value if value else (self.kernel.Print(self.kernel._vars[var_name]) or self.kernel._vars[var_name])
 
-  def line_C(self, a=''):
-    self.kernel._cellcontents = "c"
-
   def line_CC(self, a=''):
     self._set_or_print_var("CC", a)
 
   def line_CFLAGS(self, a=''):
     self._set_or_print_var("CFLAGS", a)
 
-  def line_PFLAGS(self, a=''):
+  def line_LDFLAGS(self, a=''):
+    self._set_or_print_var("LDFLAGS", a)
+
+  def line_OFLAGS(self, a=''):
     self._set_or_print_var("OFLAGS", a)
 
   def line_PFLAGS(self, a=''):
     self._set_or_print_var("PFLAGS", a)
+
+  def line_C(self, a=''):
+    self.kernel._cellcontents = "c"
 
   def line_OCTAVE(self, a=''):
     self.kernel._cellcontents = "octave"
@@ -32,8 +35,9 @@ class GPPMagics(Magic):
     self.kernel._vars = {
         "CC": "g++",
         "CFLAGS": "-std=c++20 -march=native -O3 -fno-plt -fno-stack-protector -s -pipe",
-        "PFLAGS": "-tpng -darkmode",
+        "LDFLAGS": "",
         "OFLAGS": "",
+        "PFLAGS": "-tpng -darkmode",
       }
 
 class GPPKernel(MetaKernel):
@@ -56,7 +60,7 @@ class GPPKernel(MetaKernel):
     lang = "c" if self._vars['CC'] in ('gcc', 'clang') or "c" == self._cellcontents else "c++"
 
     result = subprocess.run(
-        f"{self._vars['CC']} {self._vars['CFLAGS']} -x{lang} -o{filename} -&&{filename}",
+        f"{self._vars['CC']} {self._vars['CFLAGS']} -x{lang} {self._vars['LDFLAGS']} -o{filename} -&&{filename}",
         input=code.encode(),
         capture_output=True,
         shell=True,
