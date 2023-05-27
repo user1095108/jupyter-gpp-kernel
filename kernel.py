@@ -53,7 +53,7 @@ class GPPKernel(MetaKernel):
     with tempfile.NamedTemporaryFile(dir=tempfile.gettempdir(), suffix=".out") as tmpfile:
       filename = tmpfile.name
 
-    lang = "c" if ("gcc" == self._vars['CC']) or ("clang" == self._vars['CC']) or ("c" == self._cellcontents) else "c++"
+    lang = "c" if self._vars['CC'] in ('gcc', 'clang') or "c" == self._cellcontents else "c++"
 
     result = subprocess.run(
         f"{self._vars['CC']} {self._vars['CFLAGS']} -x{lang} -o{filename} -&&{filename}",
