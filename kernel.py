@@ -88,7 +88,7 @@ class GPPKernel(MetaKernel):
     self.call_magic("%reset")
 
   def do_execute_direct(self, code, silent=False):
-    result = self._exec_puml(code) if code.lstrip().startswith("@start") else self._exec_octave(code) if 'octave' == self._cellcontents else self._exec_gpp(code)
+    result = self._exec_octave(code) if 'octave' == self._cellcontents else self._exec_puml(code) if code.lstrip().startswith("@start") else self._exec_gpp(code)
     output = result.stderr if result.returncode else result.stdout
 
     self._cellcontents = ""
