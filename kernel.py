@@ -7,6 +7,9 @@ class GPPMagics(Magic):
   def _set_or_print_var(self, var_name, value):
     self.kernel._vars[var_name] = value if value else (self.kernel.Print(self.kernel._vars[var_name]) or self.kernel._vars[var_name])
 
+  def line_C(self, a=''):
+    self.kernel._cellcontents = "c"
+
   def line_CC(self, a=''):
     self._set_or_print_var("CC", a)
 
@@ -14,7 +17,13 @@ class GPPMagics(Magic):
     self._set_or_print_var("CFLAGS", a)
 
   def line_PFLAGS(self, a=''):
+    self._set_or_print_var("OFLAGS", a)
+
+  def line_PFLAGS(self, a=''):
     self._set_or_print_var("PFLAGS", a)
+
+  def line_OCTAVE(self, a=''):
+    self.kernel._cellcontents = "octave"
 
   def line_cd(self, a=''):
     os.chdir(os.path.expanduser(a)) if a and os.path.isdir(os.path.expanduser(a)) else self.kernel.Print(os.getcwd())
@@ -24,6 +33,7 @@ class GPPMagics(Magic):
         "CC": "g++",
         "CFLAGS": "-std=c++20 -march=native -O3 -fno-plt -fno-stack-protector -s -pipe",
         "PFLAGS": "-tpng -darkmode",
+        "OFLAGS": "",
       }
 
 class GPPKernel(MetaKernel):
@@ -37,15 +47,34 @@ class GPPKernel(MetaKernel):
     }
   banner = implementation
 
-  def _exec_gpp(self, filename, code):
-    return subprocess.run(
-        f"{self._vars['CC']} {self._vars['CFLAGS']} -xc++ -o{filename} -&&{filename}",
+  _cellcontents = ""
+
+  def _exec_gpp(self, code):
+    with tempfile.NamedTemporaryFile(dir=tempfile.gettempdir(), suffix=".out") as tmpfile:
+      filename = tmpfile.name
+
+    lang = "c" if ("gcc" == self._vars['CC']) or ("clang" == self._vars['CC']) or ("c" == self._cellcontents) else "c++"
+
+    result = subprocess.run(
+        f"{self._vars['CC']} {self._vars['CFLAGS']} -x{lang} -o{filename} -&&{filename}",
         input=code.encode(),
         capture_output=True,
         shell=True,
       )
 
-  def _exec_puml(self, filename, code):
+    os.remove(filename) if os.path.isfile(filename) else None
+
+    return result
+
+  def _exec_octave(self, code):
+    return subprocess.run(
+        f"octave {self._vars['OFLAGS']} -W",
+        input=code.encode(),
+        capture_output=True,
+        shell=True,
+      )
+
+  def _exec_puml(self, code):
     return subprocess.run(
         f"plantuml {self._vars['PFLAGS']} -p",
         input=code.encode(),
@@ -59,13 +88,10 @@ class GPPKernel(MetaKernel):
     self.call_magic("%reset")
 
   def do_execute_direct(self, code, silent=False):
-    with tempfile.NamedTemporaryFile(dir=tempfile.gettempdir(), suffix=".out") as tmpfile:
-      tmpfilename = tmpfile.name
-
-    result = self._exec_puml(tmpfilename, code) if code.lstrip().startswith("@start") else self._exec_gpp(tmpfilename, code)
-    os.remove(tmpfilename) if os.path.isfile(tmpfilename) else None
+    result = self._exec_puml(code) if code.lstrip().startswith("@start") else self._exec_octave(code) if 'octave' == self._cellcontents else self._exec_gpp(code)
     output = result.stderr if result.returncode else result.stdout
 
+    self._cellcontents = ""
     self.kernel_resp = {
         'execution_count': self.execution_count,
         'payload': [],
