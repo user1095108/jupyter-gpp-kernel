@@ -40,8 +40,8 @@ class GPPMagics(Magic):
   def line_reset(self, a=''):
     self.kernel._vars = {
         "CC": "g++",
-        "CFLAGS": "-std=c18 -march=native -O3 -fno-plt -fno-stack-protector -s -pipe",
-        "CPPFLAGS": "-std=c++20 -march=native -O3 -fno-plt -fno-stack-protector -s -pipe",
+        "CFLAGS": "-std=c18 -Wall -Wextra -march=native -O3 -fno-plt -fno-stack-protector -s -pipe",
+        "CPPFLAGS": "-std=c++20 -Wall -Wextra -march=native -O3 -fno-plt -fno-stack-protector -s -pipe",
         "LDFLAGS": "",
         "OFLAGS": "",
         "PFLAGS": "-tpng -darkmode",
@@ -109,10 +109,10 @@ class GPPKernel(MetaKernel):
         'status': 'error' if result.returncode else 'ok',
       }
 
-    if result.returncode:
-      output = result.stderr if result.stderr else result.stdout
-      self.Error(output.decode())
-    else:
+    if result.stderr:
+      self.Error(result.stderr.decode())
+
+    if result.stdout:
       output = result.stdout
 
       if output.startswith(b'\x89PNG\r\n\x1a\n') or output.startswith(b'\xFF\xD8'):
