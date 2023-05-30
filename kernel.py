@@ -49,7 +49,7 @@ class GPPMagics(Magic):
         "CFLAGS": "-std=c18 -Wall -Wextra -march=native -O3 -fno-plt -fno-stack-protector -s -pipe",
         "CPPFLAGS": "-std=c++20 -Wall -Wextra -march=native -O3 -fno-plt -fno-stack-protector -s -pipe",
         "LDFLAGS": "",
-        "BCFLAGS": "",
+        "BCFLAGS": "-l",
         "OFLAGS": "",
         "PFLAGS": "-tpng -darkmode",
       }
@@ -87,7 +87,7 @@ class GPPKernel(MetaKernel):
 
   def _exec_bc(self, code):
     return subprocess.run(
-        f"bc {self._vars['BCFLAGS']} -lq <<< '{code}'",
+        f"bc {self._vars['BCFLAGS']} -q <<< '{code}'",
         capture_output=True,
         shell=True,
       )
