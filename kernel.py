@@ -7,6 +7,9 @@ class GPPMagics(Magic):
   def line_CC(self, a=''):
     self.kernel._vars["CC"] = a
 
+  def line_BCFLAGS(self, a=''):
+    self.kernel._vars["BCFLAGS"] = a
+
   def line_CFLAGS(self, a=''):
     self.kernel._vars["CFLAGS"] = a
 
@@ -21,6 +24,9 @@ class GPPMagics(Magic):
 
   def line_PFLAGS(self, a=''):
     self.kernel._vars["PFLAGS"] = a
+
+  def line_BC(self, a=''):
+    self.kernel._cellcontents = "bc"
 
   def line_C(self, a=''):
     self.kernel._cellcontents = "c"
@@ -43,6 +49,7 @@ class GPPMagics(Magic):
         "CFLAGS": "-std=c18 -Wall -Wextra -march=native -O3 -fno-plt -fno-stack-protector -s -pipe",
         "CPPFLAGS": "-std=c++20 -Wall -Wextra -march=native -O3 -fno-plt -fno-stack-protector -s -pipe",
         "LDFLAGS": "",
+        "BCFLAGS": "",
         "OFLAGS": "",
         "PFLAGS": "-tpng -darkmode",
       }
@@ -78,9 +85,16 @@ class GPPKernel(MetaKernel):
 
     return result
 
+  def _exec_bc(self, code):
+    return subprocess.run(
+        f"bc {self._vars['BCFLAGS']} -lq <<< '{code}'",
+        capture_output=True,
+        shell=True,
+      )
+
   def _exec_octave(self, code):
     return subprocess.run(
-        f"octave {self._vars['OFLAGS']} -W",
+        f"octave {self._vars['OFLAGS']} -Wq",
         input=code.encode(),
         capture_output=True,
         shell=True,
@@ -100,7 +114,7 @@ class GPPKernel(MetaKernel):
     self.call_magic('%reset')
 
   def do_execute_direct(self, code, silent=False):
-    result = self._exec_octave(code) if 'octave' == self._cellcontents else self._exec_puml(code) if 'puml' == self._cellcontents else self._exec_gpp(code)
+    result = self._exec_bc(code) if 'bc' == self._cellcontents else self._exec_octave(code) if 'octave' == self._cellcontents else self._exec_puml(code) if 'puml' == self._cellcontents else self._exec_gpp(code)
     self._cellcontents = ""
 
     self.kernel_resp = {
