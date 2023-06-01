@@ -5,6 +5,6 @@
   "language": "c++",
   "mimetype": "text/x-cpp",
   "metadata": {
-    "languages": ["c", "cpp", "puml"]
+    "languages": ["bc", "c", "cpp", "octave", "puml"]
   }
 }
