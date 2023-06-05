@@ -81,7 +81,7 @@ class GPPKernel(MetaKernel):
         shell=True,
       )
 
-    os.remove(filename) if os.path.isfile(filename) else None
+    if os.path.isfile(filename): os.remove(filename)
 
     return result
 
