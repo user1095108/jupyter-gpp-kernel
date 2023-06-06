@@ -123,12 +123,10 @@ class GPPKernel(MetaKernel):
         'status': 'error' if result.returncode else 'ok',
       }
 
-    if result.stderr:
-      self.Error(result.stderr.decode())
+    if output := result.stderr:
+      self.Error(output.decode())
 
-    if result.stdout:
-      output = result.stdout
-
+    if output := result.stdout:
       if output.startswith(b'\x89PNG\r\n\x1a\n') or output.startswith(b'\xFF\xD8') or output.startswith(b'\x47\x49\x46\x38\x37\x61') or output.startswith(b'\x47\x49\x46\x38\x39\x61'):
         return Image(output)
       else:
