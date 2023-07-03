@@ -8,26 +8,25 @@ class GPPMagics(Magic):
     self.kernel._vars["CC"] = a
 
   def line_BCFLAGS(self, a=''):
-    self.kernel._cellcontents = "bc"
+    self.line_BC()
     self.kernel._vars["BCFLAGS"] = a
 
   def line_CFLAGS(self, a=''):
-    self.kernel._cellcontents = "c"
+    self.line_C()
     self.kernel._vars["CFLAGS"] = a
 
   def line_CPPFLAGS(self, a=''):
-    self.kernel._cellcontents = ""
     self.kernel._vars["CPPFLAGS"] = a
 
   def line_LDFLAGS(self, a=''):
     self.kernel._vars["LDFLAGS"] = a
 
   def line_OFLAGS(self, a=''):
-    self.kernel._cellcontents = "octave"
+    self.line_OCTAVE()
     self.kernel._vars["OFLAGS"] = a
 
   def line_PFLAGS(self, a=''):
-    self.kernel._cellcontents = "puml"
+    self.line_PUML()
     self.kernel._vars["PFLAGS"] = a
 
   def line_BC(self, a=''):
