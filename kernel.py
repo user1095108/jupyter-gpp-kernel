@@ -16,6 +16,7 @@ class GPPMagics(Magic):
     self.kernel._vars["CFLAGS"] = a
 
   def line_CPPFLAGS(self, a=''):
+    self.kernel._cellcontents = ""
     self.kernel._vars["CPPFLAGS"] = a
 
   def line_LDFLAGS(self, a=''):
