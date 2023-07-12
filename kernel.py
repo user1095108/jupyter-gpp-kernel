@@ -1,6 +1,6 @@
 import os, re, subprocess, tempfile
 
-from IPython.display import HTML, Image
+from IPython.display import *
 from metakernel import MetaKernel, Magic
 
 class GPPMagics(Magic):
@@ -152,6 +152,6 @@ class GPPKernel(MetaKernel):
         return Image(output)
       else:
         output = output.decode()
-        svg = re.search(r"(?s)<svg[^>]*>(.*?)<\/svg>", output)
+        svg = re.search(r"(?s)(<\?xml.*?\?>)?.*?<svg[^>]*>.*?<\/svg>", output)
 
         return HTML(svg.group(0)) if svg else self.Write(output)
