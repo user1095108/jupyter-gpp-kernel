@@ -22,6 +22,10 @@ class GPPMagics(Magic):
   def line_LDFLAGS(self, a=''):
     self.kernel._vars["LDFLAGS"] = a
 
+  def line_NFLAGS(self, a=''):
+    self.line_NGSPICE()
+    self.kernel._vars["NFLAGS"] = a
+
   def line_OFLAGS(self, a=''):
     self.line_OCTAVE()
     self.kernel._vars["OFLAGS"] = a
@@ -35,6 +39,9 @@ class GPPMagics(Magic):
 
   def line_C(self, a=''):
     self.kernel._cellcontents = "c"
+
+  def line_NGSPICE(self, a=''):
+    self.kernel._cellcontents = "ngspice"
 
   def line_OCTAVE(self, a=''):
     self.kernel._cellcontents = "octave"
@@ -55,6 +62,7 @@ class GPPMagics(Magic):
         "CPPFLAGS": "-std=c++20 -Wall -Wextra -march=native -O3 -fno-plt -fno-stack-protector -s -pipe",
         "LDFLAGS": "",
         "BCFLAGS": "-l",
+        "NFLAGS": "-b",
         "OFLAGS": "",
         "PFLAGS": "-tpng -darkmode",
       }
@@ -105,6 +113,14 @@ class GPPKernel(MetaKernel):
         shell=True,
       )
 
+  def _exec_ngspice(self, code):
+    return subprocess.run(
+        f"ngspice {self._vars['NFLAGS']}",
+        input=code.encode(),
+        capture_output=True,
+        shell=True,
+      )
+
   def _exec_puml(self, code):
     return subprocess.run(
         f"plantuml {self._vars['PFLAGS']} -p",
@@ -119,7 +135,7 @@ class GPPKernel(MetaKernel):
     self.call_magic('%reset')
 
   def do_execute_direct(self, code, silent=False):
-    result = self._exec_bc(code) if 'bc' == self._cellcontents else self._exec_octave(code) if 'octave' == self._cellcontents else self._exec_puml(code) if 'puml' == self._cellcontents else self._exec_gpp(code)
+    result = self._exec_bc(code) if 'bc' == self._cellcontents else self._exec_ngspice(code) if 'ngspice' == self._cellcontents else self._exec_octave(code) if 'octave' == self._cellcontents else self._exec_puml(code) if 'puml' == self._cellcontents else self._exec_gpp(code)
     self._cellcontents = ""
 
     self.kernel_resp = {
