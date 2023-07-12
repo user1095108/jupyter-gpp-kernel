@@ -1,4 +1,4 @@
-import os, re, subprocess, tempfile
+import cairosvg, os, re, subprocess, tempfile
 
 from IPython.display import *
 from metakernel import MetaKernel, Magic
@@ -154,4 +154,4 @@ class GPPKernel(MetaKernel):
         output = output.decode()
         svg = re.search(r"(?s)(<\?xml.*?\?>)?.*?<svg[^>]*>.*?<\/svg>", output)
 
-        return HTML(svg.group(0)) if svg else self.Write(output)
+        return Image(cairosvg.svg2png(bytestring=svg.group(0))) if svg else self.Write(output)
