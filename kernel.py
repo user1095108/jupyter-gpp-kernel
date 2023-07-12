@@ -152,5 +152,6 @@ class GPPKernel(MetaKernel):
         return Image(output)
       else:
         output = output.decode()
+        svg = re.search(r"(?s)<svg[^>]*>(.*?)<\/svg>", output)
 
-        return HTML(output) if re.search(r'<svg[^>]*>', output) else self.Write(output)
+        return HTML(svg.group(0)) if svg else self.Write(output)
