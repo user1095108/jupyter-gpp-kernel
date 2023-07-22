@@ -88,7 +88,7 @@ class GPPKernel(MetaKernel):
     output = re.sub(rb"(?s)\x89PNG[\r\n\x1a\n].*?\x49\x45\x4e\x44\xae\x42\x60\x82", remove_png, output)
 
     def remove_svg(match):
-      self.Display(Image(cairosvg.svg2png(bytestring=match.group(0).strip())))
+      self.Display(Image(cairosvg.svg2png(bytestring=match.group(0).lstrip())))
       return b""
 
     output = re.sub(rb"(?s)(<\?xml.*?\?>)?.*?<svg[^>]*>.*?<\/svg>", remove_svg, output)
