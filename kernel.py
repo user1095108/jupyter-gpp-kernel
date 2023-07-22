@@ -93,7 +93,7 @@ class GPPKernel(MetaKernel):
 
     output = re.sub(rb"(?s)(<\?xml.*?\?>)?.*?<svg[^>]*>.*?<\/svg>", remove_svg, output)
 
-    return output.rstrip()
+    return output.strip()
 
   def _exec_gpp(self, code):
     with tempfile.NamedTemporaryFile(dir=tempfile.gettempdir(), suffix=".out") as tmpfile:
