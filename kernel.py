@@ -81,19 +81,15 @@ class GPPKernel(MetaKernel):
   _cellcontents = ""
 
   def _extract(self, output):
-    def remove_png(match):
-      self.Display(Image(match.group(0)))
+    def remove(match):
+      if m := match.group("png"):
+        self.Display(Image(m))
+      else:
+        self.Display(Image(cairosvg.svg2png(bytestring=match.group(0).lstrip())))
+
       return b""
 
-    output = re.sub(rb"(?s)\x89PNG[\r\n\x1a\n].*?\x49\x45\x4e\x44\xae\x42\x60\x82", remove_png, output)
-
-    def remove_svg(match):
-      self.Display(Image(cairosvg.svg2png(bytestring=match.group(0).lstrip())))
-      return b""
-
-    output = re.sub(rb"(?s)(?:<\?xml[^>]*\?>)?.*?<svg[^>]*>.*?<\/svg>", remove_svg, output)
-
-    return re.sub(rb"^[\n\r]+|\s+\Z", b"", output)
+    return re.sub(rb"^[\n\r]+|\s+\Z", b"", re.sub(rb"(?s)(?P<png>\x89PNG[\r\n\x1a\n].*?\x49\x45\x4e\x44\xae\x42\x60\x82)|(?P<svg>(?:(?:<\?xml[^>]*\?>)?.*?<svg[^>]*>.*?<\/svg>))", remove, output))
 
   def _exec_gpp(self, code):
     with tempfile.NamedTemporaryFile(dir=tempfile.gettempdir(), suffix=".out") as tmpfile:
