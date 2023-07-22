@@ -80,6 +80,20 @@ class GPPKernel(MetaKernel):
 
   _cellcontents = ""
 
+  def _extract_images(self, output):
+    def remove_png(match):
+      self.Display(Image(match.group(0)))
+      return b""
+
+    if output := re.sub(rb"(?s)\x89PNG[\r\n\x1a\n].*?\x49\x45\x4e\x44\xae\x42\x60\x82", remove_png, output):
+      def remove_svg(match):
+        self.Display(Image(cairosvg.svg2png(bytestring=match.group(0).strip())))
+        return b""
+
+      output = re.sub(rb"(?s)(<\?xml.*?\?>)?.*?<svg[^>]*>.*?<\/svg>", remove_svg, output)
+
+    return output
+
   def _exec_gpp(self, code):
     with tempfile.NamedTemporaryFile(dir=tempfile.gettempdir(), suffix=".out") as tmpfile:
       filename = tmpfile.name
@@ -144,15 +158,5 @@ class GPPKernel(MetaKernel):
         'status': 'error' if result.returncode else 'ok',
       }
 
-    if output := result.stderr:
-      self.Error(output.decode())
-
-    if output := result.stdout:
-      if output.startswith(b'\x89PNG\r\n\x1a\n') or output.startswith(b'\xFF\xD8') or output.startswith(b'\x47\x49\x46\x38\x37\x61') or output.startswith(b'\x47\x49\x46\x38\x39\x61'):
-        return Image(output)
-      else:
-        def remove_svg(match):
-          self.Display(Image(cairosvg.svg2png(bytestring=match.group(0).strip())))
-          return ""
-
-        if output := re.sub(r"(?s)(<\?xml.*?\?>)?.*?<svg[^>]*>.*?<\/svg>", remove_svg, output.decode()): self.Write(output)
+    if (output := result.stderr) and (output := self._extract_images(output)): self.Error(output.decode())
+    if (output := result.stdout) and (output := self._extract_images(output)): self.Write(output.decode())
