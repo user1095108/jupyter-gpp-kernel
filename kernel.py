@@ -91,7 +91,7 @@ class GPPKernel(MetaKernel):
       self.Display(Image(cairosvg.svg2png(bytestring=match.group(0).lstrip())))
       return b""
 
-    output = re.sub(rb"(?s)(<\?xml.*?\?>)?.*?<svg[^>]*>.*?<\/svg>", remove_svg, output)
+    output = re.sub(rb"(?s)(?:<\?xml[^>]*\?>)?\s*?<svg[^>]*>.*?<\/svg>", remove_svg, output)
 
     return re.sub(rb"^[\n\r]+|\s+\Z", b"", output)
 
