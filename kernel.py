@@ -151,7 +151,8 @@ class GPPKernel(MetaKernel):
       if output.startswith(b'\x89PNG\r\n\x1a\n') or output.startswith(b'\xFF\xD8') or output.startswith(b'\x47\x49\x46\x38\x37\x61') or output.startswith(b'\x47\x49\x46\x38\x39\x61'):
         return Image(output)
       else:
-        output = output.decode()
-        svg = re.search(r"(?s)(<\?xml.*?\?>)?.*?<svg[^>]*>.*?<\/svg>", output)
+        def remove_svg(match):
+          self.Display(Image(cairosvg.svg2png(bytestring=match.group(0).strip())))
+          return ""
 
-        return Image(cairosvg.svg2png(bytestring=svg.group(0))) if svg else self.Write(output)
+        if output := re.sub(r"(?s)(<\?xml.*?\?>)?.*?<svg[^>]*>.*?<\/svg>", remove_svg, output.decode()): self.Write(output)
