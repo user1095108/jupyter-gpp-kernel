@@ -80,7 +80,7 @@ class GPPKernel(MetaKernel):
 
   _cellcontents = ""
 
-  def _extract_images(self, output):
+  def _extract(self, output):
     def remove_png(match):
       self.Display(Image(match.group(0)))
       return b""
@@ -92,7 +92,7 @@ class GPPKernel(MetaKernel):
 
       output = re.sub(rb"(?s)(<\?xml.*?\?>)?.*?<svg[^>]*>.*?<\/svg>", remove_svg, output)
 
-    return output
+    return output.strip()
 
   def _exec_gpp(self, code):
     with tempfile.NamedTemporaryFile(dir=tempfile.gettempdir(), suffix=".out") as tmpfile:
@@ -158,5 +158,5 @@ class GPPKernel(MetaKernel):
         'status': 'error' if result.returncode else 'ok',
       }
 
-    if (output := result.stderr) and (output := self._extract_images(output)): self.Error(output.decode())
-    if (output := result.stdout) and (output := self._extract_images(output)): self.Write(output.decode())
+    if (output := result.stderr) and (output := self._extract(output)): self.Error(output.decode())
+    if (output := result.stdout) and (output := self._extract(output)): self.Write(output.decode())
