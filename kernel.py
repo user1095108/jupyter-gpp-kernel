@@ -62,7 +62,7 @@ class GPPMagics(Magic):
         "CPPFLAGS": "-std=c++20 -Wall -Wextra -march=native -O3 -fno-plt -fno-stack-protector -s -pipe",
         "LDFLAGS": "",
         "BCFLAGS": "-l",
-        "NFLAGS": "-b",
+        "NFLAGS": "",
         "OFLAGS": "",
         "PFLAGS": "-tpng -darkmode",
       }
@@ -128,7 +128,7 @@ class GPPKernel(MetaKernel):
 
   def _exec_ngspice(self, code):
     return subprocess.run(
-        f"ngspice {self._vars['NFLAGS']}",
+        f"ngspice {self._vars['NFLAGS']} -b",
         input=code.encode(),
         capture_output=True,
         shell=True,
