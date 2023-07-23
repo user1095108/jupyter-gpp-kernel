@@ -117,17 +117,17 @@ class GPPKernel(MetaKernel):
         shell=True,
       )
 
-  def _exec_octave(self, code):
+  def _exec_ngspice(self, code):
     return subprocess.run(
-        f"octave {self._vars['OFLAGS']} -Wq",
+        f"ngspice {self._vars['NFLAGS']} -b",
         input=code.encode(),
         capture_output=True,
         shell=True,
       )
 
-  def _exec_ngspice(self, code):
+  def _exec_octave(self, code):
     return subprocess.run(
-        f"ngspice {self._vars['NFLAGS']} -b",
+        f"octave {self._vars['OFLAGS']} -Wq",
         input=code.encode(),
         capture_output=True,
         shell=True,
