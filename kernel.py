@@ -79,6 +79,8 @@ class GPPKernel(MetaKernel):
   banner = implementation
 
   _cellcontents = ""
+  _pat1 = re.compile(rb"^[\n\r]+|\s+\Z")
+  _pat2 = re.compile(rb"(?s)(?P<png>\x89PNG[\r\n\x1a\n].*?\x49\x45\x4e\x44\xae\x42\x60\x82)|(?P<svg>(?:(?:<\?xml[^>]*\?>)?.*?<svg[^>]*>.*?<\/svg>))")
 
   def _extract(self, output):
     def remove(match):
@@ -89,7 +91,7 @@ class GPPKernel(MetaKernel):
 
       return b""
 
-    return re.sub(rb"^[\n\r]+|\s+\Z", b"", re.sub(rb"(?s)(?P<png>\x89PNG[\r\n\x1a\n].*?\x49\x45\x4e\x44\xae\x42\x60\x82)|(?P<svg>(?:(?:<\?xml[^>]*\?>)?.*?<svg[^>]*>.*?<\/svg>))", remove, output))
+    return re.sub(self._pat1, b"", re.sub(self._pat2, remove, output))
 
   def _exec_gpp(self, code):
     with tempfile.NamedTemporaryFile(dir=tempfile.gettempdir(), suffix=".out") as tmpfile:
