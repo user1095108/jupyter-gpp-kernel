@@ -79,8 +79,10 @@ class GPPKernel(MetaKernel):
   banner = implementation
 
   _cellcontents = ""
+
   _pat1 = re.compile(rb"^[\n\r]+|\s+\Z")
-  _pat2 = re.compile(rb"(?s)(?P<png>\x89PNG[\r\n\x1a\n].*?\x49\x45\x4e\x44\xae\x42\x60\x82)|(?P<svg>(?:<\?xml[^>]*\?>.*?)?<svg[^>]*>.*?<\/svg>)")
+  _pat2 = re.compile(rb"(?s)(?P<png>\x89PNG[\r\n\x1a\n].*?\x49\x45\x4e\x44\xae\x42\x60\x82)|"
+                     rb"(?P<svg>(?:<\?xml[^>]*\?>.*?)?<svg[^>]*>.*?<\/svg>)")
 
   def _extract(self, output):
     def remove(match):
