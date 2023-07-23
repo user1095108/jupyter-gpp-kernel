@@ -59,7 +59,7 @@ class GPPMagics(Magic):
     self.kernel._vars = {
         "CC": "g++",
         "CFLAGS": "-std=c18 -Wall -Wextra -march=native -O3 -fno-plt -fno-stack-protector -s -pipe",
-        "CPPFLAGS": "-std=c++20 -Wall -Wextra -march=native -O3 -fno-plt -fno-stack-protector -s -pipe",
+        "CPPFLAGS": "-std=c++23 -Wall -Wextra -march=native -O3 -fno-plt -fno-stack-protector -s -pipe",
         "LDFLAGS": "",
         "BCFLAGS": "-l",
         "NFLAGS": "",
