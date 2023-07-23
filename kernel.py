@@ -84,10 +84,9 @@ class GPPKernel(MetaKernel):
 
   def _extract(self, output):
     def remove(match):
-      if m := match.group("png"):
-        self.Display(Image(m))
-      else:
-        self.Display(Image(cairosvg.svg2png(bytestring=match.group(0))))
+      match match.lastgroup:
+        case "png": self.Display(Image(match.group(0)))
+        case "svg": self.Display(Image(cairosvg.svg2png(bytestring=match.group(0))))
 
       return b""
 
@@ -148,7 +147,13 @@ class GPPKernel(MetaKernel):
     self.call_magic('%reset')
 
   def do_execute_direct(self, code, silent=False):
-    result = self._exec_bc(code) if 'bc' == self._cellcontents else self._exec_ngspice(code) if 'ngspice' == self._cellcontents else self._exec_octave(code) if 'octave' == self._cellcontents else self._exec_puml(code) if 'puml' == self._cellcontents else self._exec_gpp(code)
+    match self._cellcontents:
+      case "bc": result = self._exec_bc(code)
+      case "ngspice": result = self._exec_ngspice(code)
+      case "octave": result = self._exec_octave(code)
+      case "puml": result = self._exec_puml(code)
+      case _: result = self._exec_gpp(code)
+
     self._cellcontents = ""
 
     self.kernel_resp = {
