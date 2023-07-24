@@ -108,7 +108,8 @@ class GPPKernel(MetaKernel):
         shell=True,
       )
 
-    try: os.remove(filename); except: pass
+    try: os.remove(filename)
+    except: pass
 
     return result
 
