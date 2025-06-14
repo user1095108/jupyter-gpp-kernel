@@ -35,8 +35,8 @@ class GPPMagics(Magic):
     self.kernel._vars["PFLAGS"] = a
 
   def line_SQ3FLAGS(self, a=''):
-    self.line_PUML()
-    self.kernel._vars["PFLAGS"] = a
+    self.line_SQLITE3()
+    self.kernel._vars["SQ3FLAGS"] = a
 
   def line_BC(self, a=''):
     self.kernel._cellcontents = "bc"
