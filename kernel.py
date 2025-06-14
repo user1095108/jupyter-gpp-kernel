@@ -154,7 +154,7 @@ class GPPKernel(MetaKernel):
 
   def _exec_sqlite3(self, code):
     return subprocess.run(
-        f"sqlite3 -noheader {self._vars['SQ3FLAGS']}",
+        f"sqlite3 {self._vars['SQ3FLAGS']}",
         input=code.encode(),
         capture_output=True,
         shell=True,
