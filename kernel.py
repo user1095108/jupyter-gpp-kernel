@@ -34,6 +34,10 @@ class GPPMagics(Magic):
     self.line_PUML()
     self.kernel._vars["PFLAGS"] = a
 
+  def line_SQ3FLAGS(self, a=''):
+    self.line_PUML()
+    self.kernel._vars["PFLAGS"] = a
+
   def line_BC(self, a=''):
     self.kernel._cellcontents = "bc"
 
@@ -48,6 +52,9 @@ class GPPMagics(Magic):
 
   def line_PUML(self, a=''):
     self.kernel._cellcontents = "puml"
+
+  def line_SQLITE3(self, a=''):
+    self.kernel._cellcontents = "sqlite3"
 
   def line_cd(self, a=''):
     os.chdir(os.path.expanduser(a)) if a and os.path.isdir(os.path.expanduser(a)) else self.kernel.Print(os.getcwd())
@@ -65,6 +72,7 @@ class GPPMagics(Magic):
         "NFLAGS": "",
         "OFLAGS": "",
         "PFLAGS": "-tpng -darkmode",
+        "SQ3FLAGS": "",
       }
 
 class GPPKernel(MetaKernel):
@@ -144,6 +152,14 @@ class GPPKernel(MetaKernel):
         shell=True,
       )
 
+  def _exec_sqlite3(self, code):
+    return subprocess.run(
+        f"sqlite3 -noheader {self._vars['SQ3FLAGS']}",
+        input=code.encode(),
+        capture_output=True,
+        shell=True,
+      )
+
   def __init__(self, *args, **kwargs):
     super().__init__(*args, **kwargs)
     self.register_magics(GPPMagics)
@@ -155,6 +171,7 @@ class GPPKernel(MetaKernel):
       case "ngspice": result = self._exec_ngspice(code)
       case "octave": result = self._exec_octave(code)
       case "puml": result = self._exec_puml(code)
+      case "sqlite3": result = self._exec_sqlite3(code)
       case _: result = self._exec_gpp(code)
 
     self._cellcontents = ""
